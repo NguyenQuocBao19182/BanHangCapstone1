@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -26,7 +25,8 @@
         <activity android:name=".Activity.Update_All_Employee" />
         <activity android:name=".Activity.Update_All_Product_Update" />
         <activity android:name=".Activity.Update_All_Table_Insert" />
-        <activity android:name=".Activity.Update_All_Table_Update"></activity>
+        <activity android:name=".Activity.Update_All_Table_Update" />
+        <activity android:name=".View.TestMVP"></activity>
     </application>
 
 </manifest>

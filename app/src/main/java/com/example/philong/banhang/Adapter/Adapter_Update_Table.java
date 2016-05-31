@@ -9,15 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.philong.banhang.Activity.Update_All_Table;
 import com.example.philong.banhang.Activity.Update_All_Table_Update;
-import com.example.philong.banhang.Activity.Update_All;
-import com.example.philong.banhang.Objects.Product;
 import com.example.philong.banhang.Objects.Table;
 import com.example.philong.banhang.R;
 
@@ -70,7 +66,7 @@ public class Adapter_Update_Table extends RecyclerView.Adapter<Adapter_Update_Ta
         dialogxoa.setPositiveButton("Co", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                updateTableClass.DeleteTable(id);
+                updateTableClass.deleteDataBaseTable(id);
             }
         });
         dialogxoa.setNegativeButton("khong", new DialogInterface.OnClickListener() {

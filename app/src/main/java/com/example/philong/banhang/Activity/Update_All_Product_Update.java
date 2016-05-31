@@ -24,65 +24,64 @@ import java.util.Map;
 
 public class Update_All_Product_Update extends AppCompatActivity {
     //khai bao cac nut
-    EditText editTextName,editTextPrice;
-    Button buttonConFirm,buttonCancel;
+    EditText mEditTextName, mEditTextPrice;
+    Button mButtonConFirm, mButtonCancel;
 
     //khai bao id cho method update
-    int id=0;
+    int id = 0;
     //url
-    String urlUpdate="http://192.168.56.1:81/GraceCoffee/updateProduct.php";
+    String urlUpdate = "http://192.168.56.1:81/GraceCoffee/updateProduct.php";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_update__update);
 
-        AnhXa();
-        XuLyEvent();
+        initView();
+        handleEvent();
 
     }
 
-    void AnhXa(){
-        editTextName=findViewById(R.id.edittext_name);
-        editTextPrice=findViewById(R.id.edittext_price);
-        buttonConFirm=findViewById(R.id.button_menu_update_update_confirm);
-        buttonCancel=findViewById(R.id.button_menu_update_update_cancel);
+    void initView() {
+        mEditTextName = findViewById(R.id.edittext_name);
+        mEditTextPrice = findViewById(R.id.edittext_price);
+        mButtonConFirm = findViewById(R.id.button_menu_update_update_confirm);
+        mButtonCancel = findViewById(R.id.button_menu_update_update_cancel);
     }
 
-    void XuLyEvent(){
+    void handleEvent() {
         //nhận intent từ .. gán vào edit
-        Intent intent=getIntent();
-        Product menu_update=(Product) intent.getSerializableExtra("dataProduct"); //lấy Serializable(tuần tự) từ intent adapter
+        Intent intent = getIntent();
+        Product menu_update = (Product) intent.getSerializableExtra("dataProduct"); //lấy Serializable(tuần tự) từ intent adapter
 
-        id=menu_update.getId();
-        editTextName.setText(menu_update.getName());
-        editTextPrice.setText(String.valueOf(menu_update.getPrice()));
+        id = menu_update.getId();
+        mEditTextName.setText(menu_update.getName());
+        mEditTextPrice.setText(String.valueOf(menu_update.getPrice()));
 
-        buttonConFirm.setOnClickListener(new View.OnClickListener() {
+        mButtonConFirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String name=editTextName.getText().toString().trim();
-                String price=editTextPrice.getText().toString().trim();
-                if(name.isEmpty()||price.isEmpty()){
+                String name = mEditTextName.getText().toString().trim();
+                String price = mEditTextPrice.getText().toString().trim();
+                if (name.isEmpty() || price.isEmpty()) {
                     Toast.makeText(Update_All_Product_Update.this, "Sao để trống", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                CapNhap(urlUpdate);
+                } else {
+                    upDateDataBase(urlUpdate);
                 }
             }
         });
     }
 
-    public void CapNhap(String url){
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
-        StringRequest stringRequest=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+    public void upDateDataBase(String url) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                if(response.trim().equals("success")){//success là báo thành công trên php lấy xuống để dùng
+                if (response.trim().equals("success")) {//success là báo thành công trên php lấy xuống để dùng
                     Toast.makeText(Update_All_Product_Update.this, "Sua thanh cong", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(Update_All_Product_Update.this,Update_All_Product.class));
-                }
-                else {
+                    startActivity(new Intent(Update_All_Product_Update.this, Update_All_Product.class));
+                } else {
 
                     Toast.makeText(Update_All_Product_Update.this, "có lỗi gì rồi", Toast.LENGTH_SHORT).show();
                 }
@@ -92,17 +91,17 @@ public class Update_All_Product_Update extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(Update_All_Product_Update.this, "Loi ", Toast.LENGTH_SHORT).show();
-                Log.d("AAA","Loi!\n"+error.toString());//chi tiết lỗi
+                Log.d("AAA", "Loi!\n" + error.toString());//chi tiết lỗi
             }
         }
-        ){
+        ) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 //tạo map để đẩy lên
-                Map<String,String> params=new HashMap<>();
+                Map<String, String> params = new HashMap<>();
                 params.put("idMon", String.valueOf(id));
-                params.put("NameMon",editTextName.getText().toString().trim());//đẩy lên Json hotenSV với edtTen .trim để xóa khoảng trắng đầu,cuối
-                params.put("PriceMon",editTextPrice.getText().toString().trim());//đẩy lên Json
+                params.put("NameMon", mEditTextName.getText().toString().trim());//đẩy lên Json hotenSV với edtTen .trim để xóa khoảng trắng đầu,cuối
+                params.put("PriceMon", mEditTextPrice.getText().toString().trim());//đẩy lên Json
 
                 return params;
             }

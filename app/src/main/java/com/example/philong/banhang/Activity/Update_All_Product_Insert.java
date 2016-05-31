@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -22,7 +21,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.philong.banhang.Adapter.Adapter_Spinner_Category;
 import com.example.philong.banhang.Objects.Category;
-import com.example.philong.banhang.Objects.Product;
 import com.example.philong.banhang.R;
 
 import org.json.JSONArray;
@@ -33,53 +31,53 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Update_All_Product_Insert extends AppCompatActivity {
+public class Update_All_Product_Insert extends AppCompatActivity implements View.OnClickListener {
 
     //khai bao url
-    String urlCategory="http://192.168.56.1:81/GraceCoffee/getdataCategory.php";
-    String urlInsertProduct="http://192.168.56.1:81/GraceCoffee/insertProduct.php";
+    String urlCategory = "http://192.168.56.1:81/GraceCoffee/getdataCategory.php";
+    String urlInsertProduct = "http://192.168.56.1:81/GraceCoffee/insertProduct.php";
 
     //Khai bao Spinner
-    Spinner spn_Category;
+    Spinner mSpinerCategory;
 
     //Khai bao ArrayList
-    final ArrayList<Category> arrayList=new ArrayList<>();
+    final ArrayList<Category> arrayList = new ArrayList<>();
 
     //khai bao Adapter
-    Adapter_Spinner_Category adapter_spinner_category;
+    Adapter_Spinner_Category mAdapterSpinnerCategory;
 
-    String category;
+    String mCategory;
 
-    EditText editTextInsertProductName,editTextInsertProductPrice;
+    EditText mEditTextInsertProductName, mEditTextInsertProductPrice;
 
-    Button buttonInsertProductConfirm,buttonInsertProductCancel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_update__add);
-        AnhXa();
-        SetUpSpinner();
-        XuLyEvent();
-        GetDataCategorySpinner(urlCategory);
+        initView();
+        setUpSpinner();
+        handleEventSpinner();
+        getDataCategorySpinner(urlCategory);
     }
 
-    void AnhXa(){
-        editTextInsertProductName=findViewById(R.id.edittext_insert_product_name);
-        editTextInsertProductPrice=findViewById(R.id.edittext_insert_product_price);
+    void initView() {
+        mEditTextInsertProductName = findViewById(R.id.edittext_insert_product_name);
+        mEditTextInsertProductPrice = findViewById(R.id.edittext_insert_product_price);
 
 
-        spn_Category=findViewById(R.id.spinner_category);
+        mSpinerCategory = findViewById(R.id.spinner_category);
 
-        buttonInsertProductConfirm=findViewById(R.id.button_product_insert_confirm);
-        buttonInsertProductCancel=findViewById(R.id.button_product_insert_cancel);
+        findViewById(R.id.button_product_insert_confirm).setOnClickListener(this);
+        findViewById(R.id.button_product_insert_cancel).setOnClickListener(this);
     }
 
-    void XuLyEvent(){
-        spn_Category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    void handleEventSpinner() {
+        mSpinerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                category= String.valueOf(arrayList.get(position).id);
+                mCategory = String.valueOf(arrayList.get(position).id);
 
             }
 
@@ -89,40 +87,30 @@ public class Update_All_Product_Insert extends AppCompatActivity {
             }
         });
 
-        buttonInsertProductConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            String name=editTextInsertProductName.getText().toString().trim();
-            String price=editTextInsertProductPrice.getText().toString().trim();
-            if(name.isEmpty()||price.isEmpty()){
-                Toast.makeText(Update_All_Product_Insert.this, "Điên r", Toast.LENGTH_SHORT).show();
-            }
-
-                else {
-
-                InsertProduct(urlInsertProduct);
-            }
-            }
-        });
-        buttonInsertProductCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
 
     }
 
-    void GetDataCategorySpinner(String url){
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
+    void handleButtonConfirm() {
+        String name = mEditTextInsertProductName.getText().toString().trim();
+        String price = mEditTextInsertProductPrice.getText().toString().trim();
+        if (name.isEmpty() || price.isEmpty()) {
+            Toast.makeText(Update_All_Product_Insert.this, "Điên r", Toast.LENGTH_SHORT).show();
+        } else {
+
+            InsertProduct(urlInsertProduct);
+        }
+    }
+
+    void getDataCategorySpinner(String url) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         //GET để lấy xuống
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url,null,
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     //khi doc duoc json
                     public void onResponse(JSONArray response) {
                         arrayList.clear();
-                        for (int i=0;i<response.length();i++){
+                        for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject object = response.getJSONObject(i);
                                 arrayList.add(new Category(
@@ -134,7 +122,7 @@ public class Update_All_Product_Insert extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         }
-                        adapter_spinner_category.notifyDataSetChanged();
+                        mAdapterSpinnerCategory.notifyDataSetChanged();
                     }
                 },
                 //khi doc json bi loi
@@ -148,23 +136,23 @@ public class Update_All_Product_Insert extends AppCompatActivity {
     }
 
     //setup for Spinner
-    void SetUpSpinner(){
+    void setUpSpinner() {
 
-        adapter_spinner_category=new Adapter_Spinner_Category(this,R.layout.item_view_row_spinner,arrayList);
-        spn_Category.setAdapter(adapter_spinner_category);
+        mAdapterSpinnerCategory = new Adapter_Spinner_Category(this, R.layout.item_view_row_spinner, arrayList);
+        mSpinerCategory.setAdapter(mAdapterSpinnerCategory);
 
     }
-  private void InsertProduct(String url){
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
+
+    private void InsertProduct(String url) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         //POST để đấy lên
-        StringRequest stringRequest=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {//khi insert thành công
-                if(response.trim().equals("success")){//success là báo thành công trên php lấy xuống để dùng
+                if (response.trim().equals("success")) {//success là báo thành công trên php lấy xuống để dùng
                     Toast.makeText(Update_All_Product_Insert.this, "Them thanh cong", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(Update_All_Product_Insert.this,Update_All_Product.class));
-                }
-                else {
+                    startActivity(new Intent(Update_All_Product_Insert.this, Update_All_Product.class));
+                } else {
 
                     Toast.makeText(Update_All_Product_Insert.this, "có lỗi gì rồi", Toast.LENGTH_SHORT).show();
                 }
@@ -173,17 +161,17 @@ public class Update_All_Product_Insert extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(Update_All_Product_Insert.this, "Loi ", Toast.LENGTH_SHORT).show();
-                Log.d("AAA","Loi!\n"+error.toString());//chi tiết lỗi
+                Log.d("AAA", "Loi!\n" + error.toString());//chi tiết lỗi
             }
         }
-        ){
+        ) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 //tạo map để đẩy lên
-                Map<String,String> params=new HashMap<>();
-                params.put("tenMon",editTextInsertProductName.getText().toString().trim());//đẩy lên Json
-                params.put("gia",editTextInsertProductPrice.getText().toString().trim());//đẩy lên Json
-                params.put("maMuc",category);
+                Map<String, String> params = new HashMap<>();
+                params.put("tenMon", mEditTextInsertProductName.getText().toString().trim());//đẩy lên Json
+                params.put("gia", mEditTextInsertProductPrice.getText().toString().trim());//đẩy lên Json
+                params.put("maMuc", mCategory);
                 return params;
             }
         };
@@ -193,4 +181,14 @@ public class Update_All_Product_Insert extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button_product_insert_confirm:
+                handleButtonConfirm();
+                break;
+            case R.id.edittext_insert_product_price:
+                break;
+        }
+    }
 }

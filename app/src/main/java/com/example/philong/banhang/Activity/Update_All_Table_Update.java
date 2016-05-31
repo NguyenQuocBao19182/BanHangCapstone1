@@ -22,58 +22,56 @@ import com.example.philong.banhang.R;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Update_All_Table_Update extends AppCompatActivity {
+public class Update_All_Table_Update extends AppCompatActivity implements View.OnClickListener {
     //khai bao cac nut
-    EditText editTextUpdateTableNumber;
-    Button buttonUpdateTableConfirm,buttonUpdateTableCancel;
+    EditText mEditTextUpdateTableNumber;
+
     //khai bao id cho method update
-    int id=0;
+    int id = 0;
     //url
-    String urlUpdateTable="http://192.168.56.1:81/GraceCoffee/updateTable.php";
+    String urlUpdateTable = "http://192.168.56.1:81/GraceCoffee/updateTable.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_table__update);
-        AnhXa();
-        XuLySuKien();
+        initView();
+        handleEvent();
     }
 
-    void AnhXa(){
-        editTextUpdateTableNumber=findViewById(R.id.edittext_update_number_table);
-        buttonUpdateTableConfirm=findViewById(R.id.button_table_update_confirm);
-        buttonUpdateTableCancel=findViewById(R.id.button_table_update_cancel);
+    void initView() {
+        mEditTextUpdateTableNumber = findViewById(R.id.edittext_update_number_table);
+        findViewById(R.id.button_table_update_confirm).setOnClickListener(this);
+        findViewById(R.id.button_table_update_cancel).setOnClickListener(this);
     }
-    void XuLySuKien(){
+
+    void handleEvent() {
         //nhận intent từ .. gán vào edit
-        Intent intent=getIntent();
-        Table table=(Table) intent.getSerializableExtra("soban") ;
+        Intent intent = getIntent();
+        Table table = (Table) intent.getSerializableExtra("soban");
 
-        id=table.getId();
-        editTextUpdateTableNumber.setText(table.getName());
+        id = table.getId();
+        mEditTextUpdateTableNumber.setText(table.getName());
 
-    buttonUpdateTableConfirm.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
 
-            String numberTable=editTextUpdateTableNumber.getText().toString().trim();
-            if(numberTable.isEmpty()){
-                Toast.makeText(Update_All_Table_Update.this, "Sao rỗng", Toast.LENGTH_SHORT).show();
-            }
-            else CapNhapTable(urlUpdateTable);
-        }
-    });
     }
-    public void CapNhapTable(String url){
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
-        StringRequest stringRequest=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+    void handleEventButtonConfirm() {
+        String numberTable = mEditTextUpdateTableNumber.getText().toString().trim();
+        if (numberTable.isEmpty()) {
+            Toast.makeText(Update_All_Table_Update.this, "Sao rỗng", Toast.LENGTH_SHORT).show();
+        } else updateDataBaseTable(urlUpdateTable);
+    }
+
+    public void updateDataBaseTable(String url) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                if(response.trim().equals("success")){//success là báo thành công trên php lấy xuống để dùng
+                if (response.trim().equals("success")) {//success là báo thành công trên php lấy xuống để dùng
                     Toast.makeText(Update_All_Table_Update.this, "Sua thanh cong", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(Update_All_Table_Update.this,Update_All_Table.class));
-                }
-                else {
+                    startActivity(new Intent(Update_All_Table_Update.this, Update_All_Table.class));
+                } else {
 
                     Toast.makeText(Update_All_Table_Update.this, "có lỗi gì rồi", Toast.LENGTH_SHORT).show();
                 }
@@ -83,16 +81,16 @@ public class Update_All_Table_Update extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(Update_All_Table_Update.this, "Loi ", Toast.LENGTH_SHORT).show();
-                Log.d("AAA","Loi!\n"+error.toString());//chi tiết lỗi
+                Log.d("AAA", "Loi!\n" + error.toString());//chi tiết lỗi
             }
         }
-        ){
+        ) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 //tạo map để đẩy lên
-                Map<String,String> params=new HashMap<>();
+                Map<String, String> params = new HashMap<>();
                 params.put("idTable", String.valueOf(id));
-                params.put("SoBan",editTextUpdateTableNumber.getText().toString().trim());//đẩy lên Json .trim để xóa khoảng trắng đầu,cuối
+                params.put("SoBan", mEditTextUpdateTableNumber.getText().toString().trim());//đẩy lên Json .trim để xóa khoảng trắng đầu,cuối
 
 
                 return params;
@@ -100,5 +98,16 @@ public class Update_All_Table_Update extends AppCompatActivity {
 
         };
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button_table_update_confirm:
+                handleEventButtonConfirm();
+                break;
+            case R.id.button_table_update_cancel:
+                break;
+        }
     }
 }

@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.GridLayoutManager;
@@ -27,8 +26,9 @@ import com.example.philong.banhang.Adapter.Adapter_Table;
 import com.example.philong.banhang.Adapter.Adapter_Product_Bill;
 import com.example.philong.banhang.Objects.Product;
 import com.example.philong.banhang.Objects.Table;
-import com.example.philong.banhang.OnAdapterItemClick;
+import com.example.philong.banhang.Interface.OnAdapterItemClick;
 import com.example.philong.banhang.R;
+import com.example.philong.banhang.View.TestMVP;
 import com.nex3z.notificationbadge.NotificationBadge;
 
 
@@ -59,9 +59,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //khai báo thuộc tính con
     TextView mTextViewGetTime, mTextViewNumberTable;
-
-    Button mButtonGetProductCoffee, mButtonGetProductCannedWater, mButtonGetProductBottledWater, mButtonGetProductTea;
-    Button mButtonGetProductFruit, mButtonGetProductFastFood, mButtonGetProductOther;
 
     NotificationBadge mNotify;
 
@@ -119,13 +116,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         //ánh xạ button in category
-        mButtonGetProductCoffee = findViewById(R.id.button_category_coffee);
-        mButtonGetProductCannedWater = findViewById(R.id.button_category_cannedWater);
-        mButtonGetProductBottledWater = findViewById(R.id.button_category_bottledWater);
-        mButtonGetProductTea = findViewById(R.id.button_category_tea);
-        mButtonGetProductFruit = findViewById(R.id.button_category_fruit);
-        mButtonGetProductFastFood = findViewById(R.id.button_category_fastFood);
-        mButtonGetProductOther = findViewById(R.id.button_category_other);
+        findViewById(R.id.button_category_coffee).setOnClickListener(this);
+        findViewById(R.id.button_category_cannedWater).setOnClickListener(this);
+        findViewById(R.id.button_category_bottledWater).setOnClickListener(this);
+        findViewById(R.id.button_category_tea).setOnClickListener(this);
+        findViewById(R.id.button_category_fruit).setOnClickListener(this);
+        findViewById(R.id.button_category_fastFood).setOnClickListener(this);
+        findViewById(R.id.button_category_other).setOnClickListener(this);
 
         //ánh xạ button trên tittle
         findViewById(R.id.button_exit).setOnClickListener(this);
@@ -151,56 +148,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         }, 1000, 10000);
-
-
-        //xử lý các button trong category
-        mButtonGetProductCoffee.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDataProduct(urlGetDataProductCoffee);
-            }
-        });
-
-        mButtonGetProductCannedWater.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDataProduct(urlGetDataProductCannedWater);
-            }
-        });
-
-        mButtonGetProductBottledWater.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDataProduct(urlGetDataProductBottledWater);
-            }
-        });
-        mButtonGetProductTea.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDataProduct(urlGetDataProductTea);
-            }
-        });
-
-        mButtonGetProductFruit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDataProduct(urlGetDataProductFruit);
-            }
-        });
-
-        mButtonGetProductFastFood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDataProduct(urlGetDataProductFastFood);
-            }
-        });
-
-        mButtonGetProductOther.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDataProduct(urlGetDataProductOther);
-            }
-        });
 
 
     }
@@ -231,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
-
         mRecyclerViewTable.setAdapter(mAdapterTable);
 
 
@@ -239,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAdapterProduct = new Adapter_Product_Main(ProductArrayList, getApplicationContext());
         mRecyclerViewProduct.setAdapter(mAdapterProduct);
     }
+
 
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -259,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    public void getDataProduct(String url) {
+    public void getDataProduct(String url) {  //
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         //GET để lấy xuống
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
@@ -341,11 +288,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.button_main_print:
                 Toast.makeText(MainActivity.this, "Chưa làm gì hết hehe", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, TestMVP.class);
+                startActivity(intent);
                 break;
             case R.id.button_main_save:
                 mNotify.setNumber(++mCount);  //gán tạm thời
                 break;
-
+            case R.id.button_category_coffee:
+                getDataProduct(urlGetDataProductCoffee);
+                break;
+            case R.id.button_category_cannedWater:
+                getDataProduct(urlGetDataProductCannedWater);
+                break;
+            case R.id.button_category_bottledWater:
+                getDataProduct(urlGetDataProductBottledWater);
+                break;
+            case R.id.button_category_tea:
+                getDataProduct(urlGetDataProductTea);
+                break;
+            case R.id.button_category_fruit:
+                getDataProduct(urlGetDataProductFruit);
+                break;
+            case R.id.button_category_fastFood:
+                getDataProduct(urlGetDataProductFastFood);
+                break;
+            case R.id.button_category_other:
+                getDataProduct(urlGetDataProductOther);
+                break;
         }
     }
 }

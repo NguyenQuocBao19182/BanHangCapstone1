@@ -1,8 +1,6 @@
 package com.example.philong.banhang.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -11,14 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.philong.banhang.Activity.MainActivity;
-import com.example.philong.banhang.Objects.Product;
 import com.example.philong.banhang.Objects.Table;
-import com.example.philong.banhang.OnAdapterItemClick;
+import com.example.philong.banhang.Interface.OnAdapterItemClick;
 import com.example.philong.banhang.R;
 
 import java.util.ArrayList;
@@ -59,10 +53,9 @@ public class Adapter_Table extends RecyclerView.Adapter<Adapter_Table.ViewHolder
             public void onClick(View v) {
 
                 onAdapterItemClick.onItemClick(position);
-               // Toast.makeText(context, menuUpdatesTableArrayList.get(position).getName(), Toast.LENGTH_SHORT).show();
+
                 holder.mButtonNameTable.setBackground(notFreeTable);
 
-                //mainActivityClass.textViewNumberTable.setText(menuUpdatesTableArrayList.get(position).getName());
 
             }
         });

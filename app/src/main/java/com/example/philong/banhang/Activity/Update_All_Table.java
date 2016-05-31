@@ -18,7 +18,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.philong.banhang.Adapter.Adapter_Table;
 import com.example.philong.banhang.Adapter.Adapter_Update_Table;
 import com.example.philong.banhang.Objects.Table;
 import com.example.philong.banhang.R;
@@ -31,54 +30,46 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Update_All_Table extends AppCompatActivity {
+public class Update_All_Table extends AppCompatActivity implements View.OnClickListener {
 
     ArrayList<Table> tableArrayList = new ArrayList<>();
 
-    Adapter_Update_Table adapter_table;
+    Adapter_Update_Table mAdapterTable;
 
-    RecyclerView recyclerviewAddTable;
+    RecyclerView mRecyclerViewAddTable;
 
-    Button buttonInsertTable;
 
-    String urlDeleteDataTable="http://192.168.56.1:81/GraceCoffee/deleteTable.php";
+
+    String urlDeleteDataTable = "http://192.168.56.1:81/GraceCoffee/deleteTable.php";
+
     //khai báo 2 thuộc tính để setup grid layout
-    RecyclerView.LayoutManager recyclerViewLayoutManager;
+    RecyclerView.LayoutManager mRecyclerViewLayoutManager;
     Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_table);
-        AnhXa();
-        XuLySuKien();
-        GetDataTable(MainActivity.urlGetDataTable);
-        SetupRecyclerView();
-    }
-    void AnhXa(){
-        buttonInsertTable=findViewById(R.id.button_update_table_add);
-        recyclerviewAddTable=findViewById(R.id.recycler_view_add_table);
+        initView();
+        getDataBaseTable(MainActivity.urlGetDataTable);
+        setupRecyclerView();
     }
 
-    void XuLySuKien(){
-    buttonInsertTable.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivity(new Intent(Update_All_Table.this,Update_All_Table_Insert.class));
-        }
-    });
+    void initView() {
+        findViewById(R.id.button_update_table_add).setOnClickListener(this);
+        mRecyclerViewAddTable = findViewById(R.id.recycler_view_add_table);
     }
 
-
-    public void GetDataTable (String url){
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
+    public void getDataBaseTable(String url) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         //GET để lấy xuống
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url,null,
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     //khi doc duoc json
                     public void onResponse(JSONArray response) {
                         tableArrayList.clear();
-                        for (int i=0;i<response.length();i++){
+                        for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject object = response.getJSONObject(i);
                                 tableArrayList.add(new Table(
@@ -89,7 +80,7 @@ public class Update_All_Table extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         }
-                        adapter_table.notifyDataSetChanged();
+                        mAdapterTable.notifyDataSetChanged();
                     }
                 },
                 //khi doc json bi loi
@@ -103,16 +94,15 @@ public class Update_All_Table extends AppCompatActivity {
 
     }
 
-    public void DeleteTable(final int idban){
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
-        StringRequest stringRequest=new StringRequest(Request.Method.POST, urlDeleteDataTable, new Response.Listener<String>() {
+    public void deleteDataBaseTable(final int idban) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, urlDeleteDataTable, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {//thực thi thành công quay về getdata
-                if(response.trim().equals("success")){
+                if (response.trim().equals("success")) {
                     Toast.makeText(Update_All_Table.this, "XoaThanhCong", Toast.LENGTH_SHORT).show();
-                    GetDataTable(MainActivity.urlGetDataTable);
-                }
-                else Toast.makeText(Update_All_Table.this, "loi xoa", Toast.LENGTH_SHORT).show();
+                    getDataBaseTable(MainActivity.urlGetDataTable);
+                } else Toast.makeText(Update_All_Table.this, "loi xoa", Toast.LENGTH_SHORT).show();
             }
         }
                 , new Response.ErrorListener() {
@@ -120,10 +110,10 @@ public class Update_All_Table extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(Update_All_Table.this, "Loi xoa", Toast.LENGTH_SHORT).show();
             }
-        }){
+        }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> params=new HashMap<>();
+                Map<String, String> params = new HashMap<>();
                 params.put("idTable", String.valueOf(idban));
                 return params;
             }
@@ -131,16 +121,24 @@ public class Update_All_Table extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-    void SetupRecyclerView(){
+    void setupRecyclerView() {
 
         //Setup cấu hình cho recycler table
-        recyclerViewLayoutManager = new GridLayoutManager(context, 5);
-        recyclerviewAddTable.setHasFixedSize(true);
-        recyclerviewAddTable.setLayoutManager(recyclerViewLayoutManager);
+        mRecyclerViewLayoutManager = new GridLayoutManager(context, 5);
+        mRecyclerViewAddTable.setHasFixedSize(true);
+        mRecyclerViewAddTable.setLayoutManager(mRecyclerViewLayoutManager);
 
         //Setup gán adapter cho recycler table
-        adapter_table=new Adapter_Update_Table(tableArrayList,getApplicationContext(),this);
-        recyclerviewAddTable.setAdapter(adapter_table);
+        mAdapterTable = new Adapter_Update_Table(tableArrayList, getApplicationContext(), this);
+        mRecyclerViewAddTable.setAdapter(mAdapterTable);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.button_update_table_add:
+                startActivity(new Intent(Update_All_Table.this, Update_All_Table_Insert.class));
+                break;
+        }
+    }
 }
