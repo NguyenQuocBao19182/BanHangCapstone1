@@ -42,51 +42,46 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-
-
-
-        int count=0;
+    private int mCount = 0;
 
     //khai báo chuỗi kết nối
-        static String urlGetDataTable = "http://192.168.56.1:81/GraceCoffee/getdataTable.php";
-        static String urlGetDataProduct = "http://192.168.56.1:81/GraceCoffee/getdataProduct.php";
-        static String urlGetDataProductCoffee = "http://192.168.56.1:81/GraceCoffee/getdataProductCoffee.php";
-        static String urlGetDataProductCannedWater = "http://192.168.56.1:81/GraceCoffee/getdataProductCannedWater.php";
-        static String urlGetDataProductBottledWater = "http://192.168.56.1:81/GraceCoffee/getdataProductBottledWater.php";
-        static String urlGetDataProductTea = "http://192.168.56.1:81/GraceCoffee/getdataProductTea.php";
-        static String urlGetDataProductFruit = "http://192.168.56.1:81/GraceCoffee/getdataProductFruit.php";
-        static String urlGetDataProductFastFood = "http://192.168.56.1:81/GraceCoffee/getdataProductFastFood.php";
-        static String urlGetDataProductOther = "http://192.168.56.1:81/GraceCoffee/getdataProductOther.php";
+    static String urlGetDataTable = "http://192.168.56.1:81/GraceCoffee/getdataTable.php";
+    static String urlGetDataProduct = "http://192.168.56.1:81/GraceCoffee/getdataProduct.php";
+    static String urlGetDataProductCoffee = "http://192.168.56.1:81/GraceCoffee/getdataProductCoffee.php";
+    static String urlGetDataProductCannedWater = "http://192.168.56.1:81/GraceCoffee/getdataProductCannedWater.php";
+    static String urlGetDataProductBottledWater = "http://192.168.56.1:81/GraceCoffee/getdataProductBottledWater.php";
+    static String urlGetDataProductTea = "http://192.168.56.1:81/GraceCoffee/getdataProductTea.php";
+    static String urlGetDataProductFruit = "http://192.168.56.1:81/GraceCoffee/getdataProductFruit.php";
+    static String urlGetDataProductFastFood = "http://192.168.56.1:81/GraceCoffee/getdataProductFastFood.php";
+    static String urlGetDataProductOther = "http://192.168.56.1:81/GraceCoffee/getdataProductOther.php";
 
-        //khai báo thuộc tính con
-        TextView txt_get_time,textViewNumberTable;
-        Button btn_update_menu, btn_exit;
-        Button btn_getProduct_coffee, btn_getProduct_cannedWater, btn_getProduct_bottledWater, btn_getProduct_Tea;
-        Button btn_getProduct_Fruit, btn_getProduct_fastFood, btn_getProduct_Other;
-        Button buttonMainPrint,mButtonMainSave;
+    //khai báo thuộc tính con
+    TextView mTextViewGetTime, mTextViewNumberTable;
 
-        NotificationBadge mNotify;
+    Button mButtonGetProductCoffee, mButtonGetProductCannedWater, mButtonGetProductBottledWater, mButtonGetProductTea;
+    Button mButtonGetProductFruit, mButtonGetProductFastFood, mButtonGetProductOther;
 
-        //khai báo recyclerview
-        RecyclerView recyclerView_bill, recyclerView_product, recyclerView_table;
+    NotificationBadge mNotify;
 
-        //khai báo arrayList
+    //khai báo recyclerview
+    RecyclerView mRecyclerViewBill, mRecyclerViewProduct, mRecyclerViewTable;
 
-        ArrayList<Table> tableArrayList = new ArrayList<>();
-        ArrayList<Product> ProductArrayList = new ArrayList<>();
-        ArrayList<Product> arrayListBill=new ArrayList<>();
+    //khai báo arrayList
 
-        //khai báo adapter
-        Adapter_Product_Bill menu_adapter_update_bill;
-        Adapter_Product_Main adapter_product;
-        Adapter_Table adapter_table;
+    ArrayList<Table> tableArrayList = new ArrayList<>();
+    ArrayList<Product> ProductArrayList = new ArrayList<>();
+    ArrayList<Product> arrayListBill = new ArrayList<>();
 
-        //khai báo 2 thuộc tính để setup grid layout
-        RecyclerView.LayoutManager recyclerViewLayoutManager;
-        Context context;
+    //khai báo adapter
+    Adapter_Product_Bill mAdapterBill;
+    Adapter_Product_Main mAdapterProduct;
+    Adapter_Table mAdapterTable;
 
+    //khai báo 2 thuộc tính để setup grid layout
+    RecyclerView.LayoutManager mRecyclerViewLayoutManager;
+    Context context;
 
 
     @Override
@@ -96,225 +91,184 @@ public class MainActivity extends AppCompatActivity  {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("intentBill"));
 
-        anhXa();
+        initView();
 
         SetupRecycerView();
 
-        GetDataTable(urlGetDataTable);
+        getDataTable(urlGetDataTable);
 
-        GetDataProduct(urlGetDataProduct);
+        getDataProduct(urlGetDataProduct);
 
-        XuLyEvent();
+        handleEvent();
 
     }
 
-    public void anhXa(){
+    public void initView() {
 
         //anh xa badge
-        mNotify=findViewById(R.id.badge);
+        mNotify = findViewById(R.id.badge);
 
 
         //ánh xạ recyclerview
-        recyclerView_bill = findViewById(R.id.recycler_view_bill);
-        recyclerView_product = findViewById(R.id.recycler_view_product);
-        recyclerView_table = findViewById(R.id.recycler_view_table);
+        mRecyclerViewBill = findViewById(R.id.recycler_view_bill);
+        mRecyclerViewProduct = findViewById(R.id.recycler_view_product);
+        mRecyclerViewTable = findViewById(R.id.recycler_view_table);
 
-        textViewNumberTable=findViewById(R.id.textview_number_table);
-        txt_get_time=findViewById(R.id.text_view_getTime);
+        mTextViewNumberTable = findViewById(R.id.textview_number_table);
+        mTextViewGetTime = findViewById(R.id.text_view_getTime);
 
 
         //ánh xạ button in category
-        btn_getProduct_coffee=findViewById(R.id.button_category_coffee);
-        btn_getProduct_cannedWater=findViewById(R.id.button_category_cannedWater);
-        btn_getProduct_bottledWater=findViewById(R.id.button_category_bottledWater);
-        btn_getProduct_Tea=findViewById(R.id.button_category_tea);
-        btn_getProduct_Fruit=findViewById(R.id.button_category_fruit);
-        btn_getProduct_fastFood=findViewById(R.id.button_category_fastFood);
-        btn_getProduct_Other=findViewById(R.id.button_category_other);
+        mButtonGetProductCoffee = findViewById(R.id.button_category_coffee);
+        mButtonGetProductCannedWater = findViewById(R.id.button_category_cannedWater);
+        mButtonGetProductBottledWater = findViewById(R.id.button_category_bottledWater);
+        mButtonGetProductTea = findViewById(R.id.button_category_tea);
+        mButtonGetProductFruit = findViewById(R.id.button_category_fruit);
+        mButtonGetProductFastFood = findViewById(R.id.button_category_fastFood);
+        mButtonGetProductOther = findViewById(R.id.button_category_other);
 
         //ánh xạ button trên tittle
-        btn_exit=findViewById(R.id.button_exit);
-        btn_update_menu=findViewById(R.id.btn_update_menu);
-        buttonMainPrint=findViewById(R.id.button_main_print);
-        mButtonMainSave=findViewById(R.id.button_main_save);
+        findViewById(R.id.button_exit).setOnClickListener(this);
+        findViewById(R.id.btn_update_menu).setOnClickListener(this);
+        findViewById(R.id.button_main_print).setOnClickListener(this);
+        findViewById(R.id.button_main_save).setOnClickListener(this);
 
     }
 
-        void XuLyEvent(){
+    void handleEvent() {
         //xử lý event thời gian
         final Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String formattedDate = df.format(c.getTime());
-        txt_get_time.setText(String.valueOf(formattedDate));
-
-        //xu ly notify
-            mButtonMainSave.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mNotify.setNumber(++count);
-                }
-            });
-
+        mTextViewGetTime.setText(String.valueOf(formattedDate));
 
         //event timer
-            Timer timer=new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    GetDataTable(urlGetDataTable);
-
-                }
-            },1000,10000);
-
-        //xử lý button exit
-        btn_exit.setOnClickListener(new View.OnClickListener() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
-            public void onClick(View v) {
-                finish();
-                System.exit(0);
-            }
-        });
+            public void run() {
+                getDataTable(urlGetDataTable);
 
-        //xử lý button update
-        btn_update_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this,Update_All.class));
             }
-        });
+        }, 1000, 10000);
+
 
         //xử lý các button trong category
-        btn_getProduct_coffee.setOnClickListener(new View.OnClickListener() {
+        mButtonGetProductCoffee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetDataProduct(urlGetDataProductCoffee);
+                getDataProduct(urlGetDataProductCoffee);
             }
         });
 
-        btn_getProduct_cannedWater.setOnClickListener(new View.OnClickListener() {
+        mButtonGetProductCannedWater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetDataProduct(urlGetDataProductCannedWater);
+                getDataProduct(urlGetDataProductCannedWater);
             }
         });
 
-        btn_getProduct_bottledWater.setOnClickListener(new View.OnClickListener() {
+        mButtonGetProductBottledWater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetDataProduct(urlGetDataProductBottledWater);
+                getDataProduct(urlGetDataProductBottledWater);
             }
         });
-        btn_getProduct_Tea.setOnClickListener(new View.OnClickListener() {
+        mButtonGetProductTea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetDataProduct(urlGetDataProductTea);
-            }
-        });
-
-        btn_getProduct_Fruit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GetDataProduct(urlGetDataProductFruit);
+                getDataProduct(urlGetDataProductTea);
             }
         });
 
-        btn_getProduct_fastFood.setOnClickListener(new View.OnClickListener() {
+        mButtonGetProductFruit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetDataProduct(urlGetDataProductFastFood);
+                getDataProduct(urlGetDataProductFruit);
             }
         });
 
-        btn_getProduct_Other.setOnClickListener(new View.OnClickListener() {
+        mButtonGetProductFastFood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetDataProduct(urlGetDataProductOther);
+                getDataProduct(urlGetDataProductFastFood);
             }
         });
 
-
-
-
+        mButtonGetProductOther.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDataProduct(urlGetDataProductOther);
+            }
+        });
 
 
     }
 
-    void SetupRecycerView(){
+    void SetupRecycerView() {
         //Setup cấu hình cho recycler bill
-        recyclerView_bill.setHasFixedSize(true);
-        LinearLayoutManager layoutManager1 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL ,false);
-        recyclerView_bill.setLayoutManager(layoutManager1);
+        mRecyclerViewBill.setHasFixedSize(true);
+        LinearLayoutManager layoutManager1 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerViewBill.setLayoutManager(layoutManager1);
 
         //Setup cấu hình cho recycler product
-        recyclerViewLayoutManager = new GridLayoutManager(context, 1);
-        recyclerView_product.setHasFixedSize(true);
-        recyclerView_product.setLayoutManager(recyclerViewLayoutManager);
+        mRecyclerViewLayoutManager = new GridLayoutManager(context, 1);
+        mRecyclerViewProduct.setHasFixedSize(true);
+        mRecyclerViewProduct.setLayoutManager(mRecyclerViewLayoutManager);
 
         //Setup cấu hình cho recycler table
-        recyclerViewLayoutManager = new GridLayoutManager(context, 5);
-        recyclerView_table.setHasFixedSize(true);
-        recyclerView_table.setLayoutManager(recyclerViewLayoutManager);
+        mRecyclerViewLayoutManager = new GridLayoutManager(context, 5);
+        mRecyclerViewTable.setHasFixedSize(true);
+        mRecyclerViewTable.setLayoutManager(mRecyclerViewLayoutManager);
 
         //Setup gán adapter cho recycler table
-        adapter_table=new Adapter_Table(tableArrayList, getApplicationContext(),this, new OnAdapterItemClick() {
+        mAdapterTable = new Adapter_Table(tableArrayList, getApplicationContext(), this, new OnAdapterItemClick() {
             @Override
             public void onItemClick(int positon) {
                 Toast.makeText(MainActivity.this, tableArrayList.get(positon).getName(), Toast.LENGTH_SHORT).show();
-                    textViewNumberTable.setText(tableArrayList.get(positon).getName());
+                mTextViewNumberTable.setText(tableArrayList.get(positon).getName());
 
 
-        }
+            }
         });
-        recyclerView_table.setAdapter(adapter_table);
 
-        //Setup gán adapter cho recycler bill
-
-        //Intent intent=getIntent();
-        //Product product=(Product) intent.getSerializableExtra("databill");
-        //bug
-       // arrayListBill.add(new Product(2,"CaPheDen",20000));
-        //arrayListBill.add(new Product(2,product.getName(),product.getPrice()));
-
-
-       // menu_adapter_update_bill=new Adapter_Product_Bill(arrayListBill,getApplicationContext());
-       // recyclerView_bill.setAdapter(menu_adapter_update_bill);
-
+        mRecyclerViewTable.setAdapter(mAdapterTable);
 
 
         //Setup gán adapter cho recycler product
-        adapter_product=new Adapter_Product_Main(ProductArrayList,getApplicationContext());
-        recyclerView_product.setAdapter(adapter_product);
+        mAdapterProduct = new Adapter_Product_Main(ProductArrayList, getApplicationContext());
+        mRecyclerViewProduct.setAdapter(mAdapterProduct);
     }
 
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            Product product=(Product) intent.getSerializableExtra("databill");
+            Product product = (Product) intent.getSerializableExtra("databill");
 
-            int id=product.getId();
-            String name=product.getName();
-            int price=product.getPrice();
+            int id = product.getId();
+            String name = product.getName();
+            int price = product.getPrice();
 
-            Toast.makeText(MainActivity.this,name +" "+price ,Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, name + " " + price, Toast.LENGTH_SHORT).show();
 
             arrayListBill.add(new Product(id, name, price));
 
-            menu_adapter_update_bill=new Adapter_Product_Bill(arrayListBill,getApplicationContext());
-            recyclerView_bill.setAdapter(menu_adapter_update_bill);
+            mAdapterBill = new Adapter_Product_Bill(arrayListBill, getApplicationContext());
+            mRecyclerViewBill.setAdapter(mAdapterBill);
         }
     };
 
-    public void GetDataProduct (String url){
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
+    public void getDataProduct(String url) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         //GET để lấy xuống
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url,null,
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     //khi doc duoc json
                     public void onResponse(JSONArray response) {
                         ProductArrayList.clear();
-                        for (int i=0;i<response.length();i++){
+                        for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject object = response.getJSONObject(i);
                                 ProductArrayList.add(new Product(
@@ -327,7 +281,7 @@ public class MainActivity extends AppCompatActivity  {
                                 e.printStackTrace();
                             }
                         }
-                        adapter_product.notifyDataSetChanged();
+                        mAdapterProduct.notifyDataSetChanged();
                     }
                 },
                 //khi doc json bi loi
@@ -340,16 +294,16 @@ public class MainActivity extends AppCompatActivity  {
         requestQueue.add(jsonArrayRequest);
     }
 
-    public void GetDataTable (String url){
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
+    public void getDataTable(String url) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         //GET để lấy xuống
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url,null,
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     //khi doc duoc json
                     public void onResponse(JSONArray response) {
                         tableArrayList.clear();
-                        for (int i=0;i<response.length();i++){
+                        for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject object = response.getJSONObject(i);
                                 tableArrayList.add(new Table(
@@ -360,7 +314,7 @@ public class MainActivity extends AppCompatActivity  {
                                 e.printStackTrace();
                             }
                         }
-                        adapter_table.notifyDataSetChanged();
+                        mAdapterTable.notifyDataSetChanged();
                     }
                 },
                 //khi doc json bi loi
@@ -375,6 +329,23 @@ public class MainActivity extends AppCompatActivity  {
     }
 
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button_exit:
+                finish();
+                System.exit(0);
+                break;
+            case R.id.btn_update_menu:
+                startActivity(new Intent(MainActivity.this, Update_All.class));
+                break;
+            case R.id.button_main_print:
+                Toast.makeText(MainActivity.this, "Chưa làm gì hết hehe", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.button_main_save:
+                mNotify.setNumber(++mCount);  //gán tạm thời
+                break;
 
-
+        }
+    }
 }

@@ -8,44 +8,32 @@ import android.widget.Button;
 
 import com.example.philong.banhang.R;
 
-public class Update_All extends AppCompatActivity {
-    //khai bao cac nut
-    Button buttonUpdateMenu,buttonUpdateTable,butonUpdateEmployee;
+public class Update_All extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update);
-        AnhXa();
-        XuLyEvent();
+        initView();
     }
-    void AnhXa(){
+    void initView(){
+        findViewById(R.id.button_update_menu).setOnClickListener(this);
+        findViewById(R.id.button_update_table).setOnClickListener(this);
+        findViewById(R.id.button_update_employee).setOnClickListener(this);
+    }
 
-        buttonUpdateMenu=findViewById(R.id.button_update_menu);
-        buttonUpdateTable=findViewById(R.id.button_update_table);
-        butonUpdateEmployee=findViewById(R.id.button_update_employee);
-    }
-    void XuLyEvent(){
-        buttonUpdateMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.button_update_menu :
                 startActivity(new Intent(Update_All.this,Update_All_Product.class));
-            }
-        });
-
-        buttonUpdateTable.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case R.id.button_update_table:
                 startActivity(new Intent(Update_All.this,Update_All_Table.class));
-            }
-        });
-
-        butonUpdateEmployee.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case R.id.button_update_employee:
                 startActivity(new Intent(Update_All.this,Update_All_Employee.class));
-            }
-        });
-
+                break;
+        }
     }
-
 }
